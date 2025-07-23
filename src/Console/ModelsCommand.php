@@ -338,6 +338,17 @@ class ModelsCommand extends Command
                     ksort($classMap);
 
                     foreach ($classMap as $model => $path) {
+                        try {
+                            $reflection = new \ReflectionClass($model);
+                            $doc = $reflection->getDocComment();
+
+                            if ($doc && strpos($doc, '@ide-helper-model-ignore') !== false) {
+                                continue;
+                            }
+                        } catch (\ReflectionException $e) {
+                            continue;
+                        }
+
                         $models[] = $model;
                     }
                 }
@@ -542,6 +553,13 @@ class ModelsCommand extends Command
         if ($methods) {
             sort($methods);
             foreach ($methods as $method) {
+                $reflection = new \ReflectionMethod($model, $method);
+                $doc = $reflection->getDocComment();
+
+                if ($doc && strpos($doc, '@ide-helper-method-ignore') !== false) {
+                    continue; // Пропустить метод, если есть тег
+                }
+
                 if (
                     Str::startsWith($method, 'get') && Str::endsWith(
                         $method,
