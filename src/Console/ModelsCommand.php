@@ -67,6 +67,11 @@ class ModelsCommand extends Command
         'morphedByMany' => MorphToMany::class,
     ];
 
+    private const TAG_IGNORE_MODEL = '@ide-helper-model-ignore';
+
+    private const TAG_IGNORE_METHOD = '@ide-helper-method-ignore';
+
+
     /**
      * @var Filesystem $files
      */
@@ -342,7 +347,7 @@ class ModelsCommand extends Command
                             $reflection = new \ReflectionClass($model);
                             $doc = $reflection->getDocComment();
 
-                            if ($doc && strpos($doc, '@ide-helper-model-ignore') !== false) {
+                            if ($doc && strpos($doc, self::TAG_IGNORE_MODEL) !== false) {
                                 continue;
                             }
                         } catch (\ReflectionException $e) {
@@ -556,7 +561,7 @@ class ModelsCommand extends Command
                 $reflection = new \ReflectionMethod($model, $method);
                 $doc = $reflection->getDocComment();
 
-                if ($doc && strpos($doc, '@ide-helper-method-ignore') !== false) {
+                if ($doc && strpos($doc, self::TAG_IGNORE_METHOD) !== false) {
                     continue; // Пропустить метод, если есть тег
                 }
 
